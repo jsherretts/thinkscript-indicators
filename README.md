@@ -10,6 +10,8 @@ The team builder uses weekly game data provided by DraftKings to generate a full
 
 #### VWAP Rejection
 
+![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/vwap-rejection.PNG)
+
 1. **Open Thinkorswim**
 
 2. **From a chart, select Studies, select Edit Studies**
