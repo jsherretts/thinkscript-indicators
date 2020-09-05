@@ -10,7 +10,7 @@ Collection of indicators to use on the Think or Swim trading platform
 
 3. From the Studies tab, press Create, give the study a name
 
-4. Paste the code from `vwap-rejection.ts` in the study window
+4. Paste the code from `vwap-rejection.ts` or `vwap-stochastics.ts` in the study window
 
 5. Press Ok, press Ok
 
