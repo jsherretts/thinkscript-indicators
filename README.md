@@ -18,4 +18,8 @@ Collection of indicators to use on the Think or Swim trading platform
 
 ![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/vwap-rejection.PNG)
 
-### DO NOT USE REAL MONEY TO TRADE THIS INDICATOR. THERE IS ABSOLUTELY NO GUARANTEE THIS INDICATOR WORKS.
+#### VWAP + Stochastics
+
+![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/vwap-stochastics.PNG)
+
+### DO NOT USE REAL MONEY TO TRADE THESE INDICATORS. THERE IS ABSOLUTELY NO GUARANTEE THESE INDICATORS WORK.
