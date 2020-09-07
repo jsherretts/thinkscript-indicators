@@ -16,10 +16,10 @@ Collection of indicators to use on the Think or Swim trading platform
 
 #### VWAP Rejection
 
-![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/vwap-rejection.PNG)
+![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/images/vwap-rejection.PNG)
 
 #### VWAP + Stochastics
 
-![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/vwap-stochastics.PNG)
+![Inside Bar](https://github.com/iniguezdj/thinkscript-indicators/blob/master/images/vwap-stochastics.PNG)
 
 ### DO NOT USE REAL MONEY TO TRADE THESE INDICATORS. THERE IS ABSOLUTELY NO GUARANTEE THESE INDICATORS WORK.
