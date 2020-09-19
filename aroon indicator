@@ -1,0 +1,52 @@
+This is the code for the Strategy Template:
+input tradeSize = 100;
+def signal = 0;
+addOrder(OrderType.BUY_TO_OPEN, signal, open[-1], tradeSize, Color.CYAN, Color.CYAN);
+def exit = 0;
+addOrder(OrderType.SELL_TO_CLOSE, exit, open[-1], tradeSize, Color.MAGENTA, Color.MAGENTA);
+
+This is the code for the Study Template:
+declare lower;
+plot signal = 0;
+plot exit = 0;
+
+This is the code for the revised SLM Ribbons study:
+input price = close;
+input superfast_length = 8;
+input fast_length = 13;
+input slow_length = 21;
+input displace = 0;
+def mov_avg8 = ExpAverage(price[-displace], superfast_length);
+def mov_avg13 = ExpAverage(price[-displace], fast_length);
+def mov_avg21 = ExpAverage(price[-displace], slow_length);
+#moving averages
+Plot Superfast = mov_avg8;
+plot Fast = mov_avg13;
+plot Slow = mov_avg21;
+def buy = mov_avg8 > mov_avg13 and mov_avg13 > mov_avg21 and low > mov_avg8;
+def stopbuy = mov_avg8 <= mov_avg13;
+def buynow = !buy[1] and buy;
+plot Buy_Signal = buynow and !stopBuy;
+Buy_signal.setpaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+Buy_signal.setdefaultColor(color.dark_GREEN);
+Buy_signal.hidetitle();
+def sell = mov_avg8 < mov_avg13 and mov_avg13 < mov_avg21 and high < mov_avg8;
+def stopsell = mov_avg8 >= mov_avg13;
+def sellnow = !sell[1] and sell;
+Plot Sell_Signal = sellNow and !stopSell;
+Sell_signal.setpaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_down);
+sell_signal.setDefaultColor(color.red);
+Sell_signal.hidetitle();
+
+
+
+
+
+input length = 25;
+Assert(length > 0, "'length' must be positive: " + length);
+def Up = (length - 1 - GetMaxValueOffset(high, length)) * 100.0 / (length - 1);
+def Down = (length - 1 - GetMinValueOffset(low, length)) * 100.0 / (length - 1);
+# scan for up line crossing above down line
+plot scan = Up[1] < Down[1] and Up > Down;
+# scan for down line crossing above up line
+#plot scan = Down[1] < Up[1] and Down > Up;
