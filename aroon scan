@@ -1,0 +1,6 @@
+[type = stock] AND [country = US] 
+AND [Daily SMA(20,Daily Volume) > 100000] 
+AND [Daily SMA(60,Daily Close) > 20] 
+
+AND [Daily Aroon Up(25) < 20] 
+AND [Daily Aroon Down(25) < 20]
