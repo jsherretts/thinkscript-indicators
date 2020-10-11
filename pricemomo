@@ -1,0 +1,21 @@
+declare lower;
+
+input length = 14;
+input colorNormLength = 14;
+input price = close;
+
+assert(length > 0, "'length' must be positive: " + length);
+def c = close;
+
+plot RS = ((((C - C[63]) / C[63]) * .4) + (((C - C[126]) / C[126]) * .2) + (((C - C[189]) / C[189]) * .2) + (((C - C[252]) / C[252]) * .2)) * 100 ;
+plot ROC = if price[length] != 0 then (price / price[length] - 1) * 100 else 0;
+plot ZeroLine = 0;
+
+ROC.DefineColor("Highest", Color.YELLOW);
+ROC.DefineColor("Lowest", Color.LIGHT_RED);
+ROC.AssignNormGradientColor(colorNormLength, ROC.color("Lowest"), ROC.color("Highest"));
+
+RS.DefineColor("Highest", Color.Green);
+RS.DefineColor("Lowest", Color.cyan);
+RS.AssignNormGradientColor(colorNormLength, RS.color("Lowest"), RS.color("Highest"));
+ZeroLine.SetDefaultColor(GetColor(5));
