@@ -1,0 +1,70 @@
+# --- script begin ----
+
+declare upper;
+
+input price = close;
+input ColorType = {default STD, ROC};
+input fastLength = 12;
+input slowLength = 26;
+input SignalLength = 9;
+input SmoothLength = 7;
+
+def PPO = 100 * (ExpAverage(price, fastLength) - ExpAverage(price, slowLength))/ExpAverage(price, slowLength);
+def Signal = ExpAverage(PPO, SignalLength);
+def ROC = wma(PPO - PPO[1], SmoothLength);
+
+def ColorValue;
+switch (ColorType) {
+case STD:
+ColorValue = PPO - Signal;
+case ROC:
+# ROC is smoothed with a weightedMA and multiplied for better appearance
+ColorValue = wma(PPO - PPO[1], SmoothLength);
+}
+
+AssignPriceColor(if ColorValue >= 0 then if ColorValue > ColorValue[1] then color.green else color.dark_green else if ColorValue < ColorValue[1] then color.red else color.dark_red);
+
+# --- script end ----
+
+
+
+declare lower;
+
+input price = close;
+input HistoType = {default STD, ROC};
+input fastLength = 12;
+input slowLength = 26;
+input SignalLength = 9;
+input SmoothLength = 7;
+input factor = 5;
+
+plot PPO = 100 * (ExpAverage(price, fastLength) - ExpAverage(price, slowLength))/ExpAverage(price, slowLength);
+plot Signal = ExpAverage(PPO, SignalLength);
+PPO.SetDefaultColor(GetColor(1));
+PPO.SetLineWeight(2);
+Signal.SetDefaultColor(GetColor(8));
+Signal.SetStyle(Curve.SHORT_DASH);
+
+def valueDiff;
+switch (HistoType) {
+case STD:
+valueDiff = PPO - Signal;
+case ROC:
+# ROC is smoothed with a weightedMA and multiplied for better appearance
+valueDiff = factor * wma(PPO - PPO[1], SmoothLength);
+}
+
+plot Diff = factor * valueDiff;
+Diff.SetDefaultColor(GetColor(5));
+Diff.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+Diff.SetLineWeight(4);
+Diff.DefineColor("Positive and Up", color.GREEN);
+Diff.DefineColor("Positive and Down", Color.DARK_GREEN);
+Diff.DefineColor("Negative and Down", Color.RED);
+Diff.DefineColor("Negative and Up", Color.DARK_RED);
+Diff.AssignValueColor(if Diff >= 0 then if Diff > Diff[1] then Diff.color("Positive and Up") else Diff.color("Positive and Down") else if Diff < Diff[1] then Diff.color("Negative and Down") else Diff.color("Negative and Up"));
+
+plot ZeroLine = 0;
+ZeroLine.SetDefaultColor(GetColor(7));
+
+# --- script end ----
