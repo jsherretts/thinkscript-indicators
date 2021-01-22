@@ -1,0 +1,29 @@
+# bollinger beauty 
+
+declare lower;
+
+
+plot Data = TTM_ScalperAlert()."PivotLow" is true and close crosses below BollingerBands()."LowerBand" from 1 bars ago;
+
+plot Data1 = TTM_ScalperAlert()."PivotLow" is true and SimpleMovingAvg("length" = 3)."SMA" crosses below BollingerBands()."LowerBand" from 1 bars ago;
+
+
+#beasty 3
+
+declare lower;
+
+
+plot Data = SchaffTrendCycle()."STC" is greater than 90 and HACOLT() is equal to 100 and DarvasBox()."Buy Signal" is true within 3 bars;
+
+
+#Awesome 3
+#declare lower;
+
+plot Data = ErgodicOsc()."ErgodicOsc" is greater than 0 and AwesomeOscillator()."AO" is greater than 0 and AroonIndicator()."Up" is greater than  AroonIndicator()."Down" is less than AroonIndicator()."Up";
+
+
+Awesomepolymom3
+declare lower ;
+
+
+plot Data = AwesomeOscillator()."AO" is greater than 0 and ErgodicOsc()."ErgodicOsc" is greater than 0 and LBR_ThreeTenOscillator()."Hist" is greater than 0;
