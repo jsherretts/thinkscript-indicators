@@ -27,3 +27,7 @@ declare lower ;
 
 
 plot Data = AwesomeOscillator()."AO" is greater than 0 and ErgodicOsc()."ErgodicOsc" is greater than 0 and LBR_ThreeTenOscillator()."Hist" is greater than 0;
+
+#Quadsetup
+
+AwesomeOscillator()."AO" is greater than 0 and ElliotOscillator()."ElliotOsc" is greater than 0 and ErgodicOsc()."ErgodicOsc" is greater than 0 and TrendQuality()."TQ" is greater than 0
