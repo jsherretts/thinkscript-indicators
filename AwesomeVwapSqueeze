@@ -1,0 +1,186 @@
+#hint: VWAP stops anchored off  fractalTrader pivots.
+
+#hint n: Lookback period for finding swing highs, lows.
+input n = 20;
+
+#hint ticks: Offset High/Low VWAP lines by this number of ticks.
+input ticks = 2.0;
+
+def bnOK = BarNumber() > n;
+
+def isHigher = fold i = 1 to n + 1 with p = 1 
+               while p do high > GetValue(high, -i);
+
+def HH = if bnOK and isHigher 
+         and high == Highest(high, n) 
+         then high else Double.NaN;
+
+def isLower = fold j = 1 to n + 1 with q = 1
+              while q do low < GetValue(low, -j);
+
+def LL = if bnOK and isLower 
+         and low == Lowest(low, n) 
+         then low else Double.NaN;
+
+def PivH = if HH > 0 then HH else Double.NaN;
+def PivL = if LL > 0 then LL else Double.NaN;
+
+def Up = !IsNaN(PivL);
+#Up.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+#Up.SetLineWeight(3);
+#Up.SetDefaultColor(Color.WHITE);
+
+def Dn = !IsNaN(PivH);
+#Dn.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+#Dn.SetLineWeight(3);
+#Dn.SetDefaultColor(Color.ORANGE);
+
+def LocH = (high + (TickSize() * ticks)) * volume;
+def LocL = (low - (TickSize() * ticks)) * volume;
+def LocC = close * volume;
+
+rec PC;
+rec VC;
+rec PC2;
+rec VC2;
+rec PH;
+rec VH;
+rec PL;
+rec VL;
+rec PH2;
+rec VH2;
+rec PL2;
+rec VL2;
+
+if Dn or Up {
+    PC = LocC;
+    VC = volume;
+    PC2 = PC[1];
+    VC2 = VC[1];
+} else {
+    PC = CompoundValue(1, LocC + PC[1], Double.NaN);
+    VC = CompoundValue(1, volume + VC[1], Double.NaN);
+    PC2 = CompoundValue(1, LocC + PC2[1], Double.NaN);
+    VC2 = CompoundValue(1, volume + VC2[1], Double.NaN);
+}
+
+if Dn {
+    PH = LocH;
+    VH = volume;
+    PH2 = PH[1];
+    VH2 = VH[1];
+} else {
+    PH = CompoundValue(1, LocH + PH[1], Double.NaN);
+    VH = CompoundValue(1, volume + VH[1], Double.NaN);
+    PH2 = CompoundValue(1, LocH + PH2[1], Double.NaN);
+    VH2 = CompoundValue(1, volume + VH2[1], Double.NaN);
+}
+if Up  {
+    PL = LocL;
+    VL = volume;
+    PL2 = PL[1];
+    VL2 = VL[1];
+} else {
+    PL = CompoundValue(1, LocL + PL[1], Double.NaN);
+    VL = CompoundValue(1, volume + VL[1], Double.NaN);
+    PL2 = CompoundValue(1, LocL + PL2[1], Double.NaN);
+    VL2 = CompoundValue(1, volume + VL2[1], Double.NaN);
+}
+
+def VwapC = if Dn or Up then Double.NaN else PC / VC;
+def VwapC2 = if Dn or Up then Double.NaN else PC2 / VC2;
+def VwapH = if Dn then Double.NaN else PH / VH;
+def VwapL = if Up then Double.NaN else PL / VL;
+def VwapH2 = if Dn then Double.NaN else PH2 / VH2;
+def VwapL2 = if Up then Double.NaN else PL2 / VL2;
+
+#VwapC.SetDefaultColor(Color.YELLOW);
+#VwapC.SetLineWeight(2);
+#VwapC.HideBubble();
+
+#VwapC2.SetDefaultColor(Color.YELLOW);
+#VwapC2.SetLineWeight(2);
+#VwapC2.SetStyle(Curve.SHORT_DASH);
+#VwapC2.HideBubble();
+
+#VwapH.SetDefaultColor(Color.DARK_RED);
+#VwapH.HideBubble();
+
+#VwapL.SetDefaultColor(Color.DARK_GREEN);
+#VwapL.HideBubble();
+
+#VwapH2.SetDefaultColor(Color.DARK_RED);
+#VwapH2.SetStyle(Curve.SHORT_DASH);
+#VwapH2.HideBubble();
+
+#VwapL2.SetDefaultColor(Color.DARK_GREEN);
+#VwapL2.SetStyle(Curve.SHORT_DASH);
+#VwapL2.HideBubble();
+
+declare lower;
+declare zerobase;
+
+plot AO = Average(hl2, 5) - Average(hl2, 34);
+plot Zero = 0;
+
+AO.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+AO.SetLineWeight(3);
+AO.DefineColor("Up", Color.UPTICK);
+AO.DefineColor("Down", Color.DOWNTICK);
+AO.AssignValueColor(if AO > AO[1] then AO.Color("Up") else if AO < AO[1] then AO.Color("Down") else GetColor(1));
+Zero.SetDefaultColor(GetColor(5));
+
+
+
+
+plot Data = Up;
+
+
+
+
+input price = close;
+input length = 20;
+input Num_Dev_Dn = -2.0;
+input Num_Dev_up = 2.0;
+input averageType = AverageType.SIMPLE;
+input displace = 0;
+def sDev = StDev(data = price[-displace], length = length);
+def MidLineBB = MovingAverage(averageType, data = price[-displace], length = length);
+def LowerBandBB = MidLineBB + Num_Dev_Dn * sDev;
+def UpperBandBB = MidLineBB + Num_Dev_up * sDev;
+input factorhigh = 1.0;
+input factormid = 1.5;
+input factorlow = 2.0;
+input trueRangeAverageType = AverageType.SIMPLE;
+def shifthigh = factorhigh * MovingAverage(trueRangeAverageType, TrueRange(high, close, low), length);
+def shiftMid = factormid * MovingAverage(trueRangeAverageType, TrueRange(high, close, low), length);
+def shiftlow = factorlow * MovingAverage(trueRangeAverageType, TrueRange(high, close, low), length);
+def average = MovingAverage(averageType, price, length);
+
+def Avg = average[-displace];
+
+
+def UpperBandKCLow = average[-displace] + shiftlow[-displace];
+def LowerBandKCLow = average[-displace] - shiftlow[-displace];
+
+def UpperBandKCMid = average[-displace] + shiftMid[-displace];
+def LowerBandKCMid = average[-displace] - shiftMid[-displace];
+
+def UpperBandKCHigh = average[-displace] + shifthigh[-displace];
+def LowerBandKCHigh = average[-displace] - shifthigh[-displace];
+
+def K = (Highest(high, length) + Lowest(low, length)) /
+2 + ExpAverage(close, length);
+def momo = Inertia(price - K / 2, length);
+
+def pos         = momo >= 0;
+def neg         = momo < 0;
+def up1         = momo >= momo[1];
+def dn1         = momo < momo[1];
+
+
+def presqueeze      = LowerBandBB > LowerBandKCLow and UpperBandBB < UpperBandKCLow;
+def originalSqueeze     = LowerBandBB > LowerBandKCMid and UpperBandBB < UpperBandKCMid;
+def ExtrSqueeze     = LowerBandBB > LowerBandKCHigh and UpperBandBB < UpperBandKCHigh;
+
+plot scan = presqueeze or originalSqueeze or ExtrSqueeze within 1 bar;
