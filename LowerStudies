@@ -31,3 +31,9 @@ plot Data = AwesomeOscillator()."AO" is greater than 0 and ErgodicOsc()."Ergodic
 #Quadsetup
 
 AwesomeOscillator()."AO" is greater than 0 and ElliotOscillator()."ElliotOsc" is greater than 0 and ErgodicOsc()."ErgodicOsc" is greater than 0 and TrendQuality()."TQ" is greater than 0
+
+
+#movingAverage
+declare lower;
+
+plot Data = close is greater than SimpleMovingAvg()."SMA" from 1 bars ago and close is greater than SimpleMovingAvg("length" = 21, "show breakout signals" = yes)."SMA" from 1 bars ago;
