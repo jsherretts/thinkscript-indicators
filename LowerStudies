@@ -37,3 +37,33 @@ AwesomeOscillator()."AO" is greater than 0 and ElliotOscillator()."ElliotOsc" is
 declare lower;
 
 plot Data = close is greater than SimpleMovingAvg()."SMA" from 1 bars ago and close is greater than SimpleMovingAvg("length" = 21, "show breakout signals" = yes)."SMA" from 1 bars ago;
+
+
+
+#Schaff bot
+input fastLength = 23;
+input slowLength = 50;
+input KPeriod = 10;
+input DPeriod = 3;
+input over_bought = 75;
+input over_sold = 25;
+input averageType = AverageType.EXPONENTIAL;
+
+def macd = MovingAverage(averageType, close, fastLength) - MovingAverage(averageType, close, slowLength);
+def fastK1 = FastKCustom(macd, KPeriod);
+def fastD1 = MovingAverage(averageType, fastK1, DPeriod);
+def fastK2 = FastKCustom(fastD1, KPeriod);
+def STC = MovingAverage(averageType, fastK2, DPeriod);
+def OverBought = over_bought;
+def OverSold = over_sold;
+
+def Buy = SchaffTrendCycle()."STC" crosses above 25;
+def profit = SchaffTrendCycle()."STC" crosses below 75;
+def short = SchaffTrendCycle()."STC" crosses below 80;
+def cover = SchaffTrendCycle()."STC" crosses above 5;
+
+
+AddOrder(OrderType.BUY_TO_OPEN, Buy, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "Buy");
+AddOrder(OrderType.SELL_TO_OPEN,short , tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "schaff short");
+AddOrder(OrderType.SELL_TO_CLOSE, profit, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
+AddOrder(OrderType.BUY_TO_CLOSE, cover, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "cover");
