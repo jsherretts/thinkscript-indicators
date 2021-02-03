@@ -67,3 +67,37 @@ AddOrder(OrderType.BUY_TO_OPEN, Buy, tickcolor = GetColor(3), arrowcolor = GetCo
 AddOrder(OrderType.SELL_TO_OPEN,short , tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "schaff short");
 AddOrder(OrderType.SELL_TO_CLOSE, profit, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
 AddOrder(OrderType.BUY_TO_CLOSE, cover, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "cover");
+
+
+
+
+
+#percentR trading bot
+
+
+
+
+input length = 14;
+input over_Sold = 20;
+input over_Bought = 80;
+
+def highest = Highest(high, length);
+def divisor = highest - Lowest(low, length);
+
+def "%R" = if divisor equals 0 then 0 else 100 - 100 * (highest - close) / divisor;
+def OverBought = over_Bought;
+def OverSold = over_Sold;
+
+
+
+def buyToOpen =  PercentR()."%R" crosses above 20 ;
+def buyToClose= PercentR()."%R" crosses above 80 ;
+def sellToOpen= PercentR()."%R" crosses below 75; 
+def sellToClose= PercentR()."%R" crosses below 20;
+
+
+AddOrder(OrderType.BUY_TO_OPEN, buyToOpen, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "DonchianLE");
+AddOrder(OrderType.SELL_TO_OPEN, sellToOpen, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "DonchianSE");
+AddOrder(OrderType.SELL_TO_CLOSE, sellToClose, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "DonchianLX");
+AddOrder(OrderType.BUY_TO_CLOSE, buyToClose, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "DonchianSX");
+
