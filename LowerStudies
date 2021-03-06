@@ -101,3 +101,35 @@ AddOrder(OrderType.SELL_TO_OPEN, sellToOpen, tickcolor = GetColor(4), arrowcolor
 AddOrder(OrderType.SELL_TO_CLOSE, sellToClose, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "DonchianLX");
 AddOrder(OrderType.BUY_TO_CLOSE, buyToClose, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "DonchianSX");
 
+input length = 14;
+input over_Sold = 20;
+input over_Bought = 80;
+
+def highest = Highest(high, length);
+def divisor = highest - Lowest(low, length);
+
+def "%R" = if divisor equals 0 then 0 else 100 - 100 * (highest - close) / divisor;
+def OverBought = over_Bought;
+def OverSold = over_Sold;
+
+
+
+
+
+
+plot buy = PercentR()."%R" crosses above 20;
+
+plot sell = PercentR()."%R" crosses above 75;
+
+plot shortsell = PercentR()."%R" crosses below 75;
+
+plot covershort = PercentR()."%R" crosses below 20;
+
+
+
+
+
+AddOrder(OrderType.BUY_TO_OPEN, buy, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "buy");
+#AddOrder(OrderType.SELL_TO_OPEN, shortsell, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "shortsell");
+AddOrder(OrderType.SELL_TO_CLOSE, sell, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
+#AddOrder(OrderType.BUY_TO_CLOSE, covershort, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "covershort");
