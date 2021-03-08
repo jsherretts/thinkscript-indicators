@@ -251,3 +251,89 @@ AddOrder(OrderType.BUY_TO_OPEN, buy, tickcolor = GetColor(3), arrowcolor = GetCo
 #AddOrder(OrderType.SELL_TO_OPEN, shortsell, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "shortsell");
 AddOrder(OrderType.SELL_TO_CLOSE, sell, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
 #AddOrder(OrderType.BUY_TO_CLOSE, covershort, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "covershort");
+
+
+
+# Candlestick Reversal System
+# Assembled by BenTen at useThinkScript.com
+# Converted from https://www.tradingview.com/script/H5290fLn-Candlestick-Reversal-System/
+# orders added by jsherretts 3/8/21
+input extreme_reversal = yes;
+input outside_reversal = yes;
+input doji_reversal = yes;
+
+def O = open;
+def C = close;
+def H = high;
+def L = low;
+
+input bodysize = 0.525;
+input barsback = 50;
+input bodymultiplier = 2;
+
+def mybodysize = absValue(C - O);
+def AverageBody = simpleMovingAvg(mybodysize, barsback);
+def mycandlesize = (H - L);
+def AverageCandle = simpleMovingAvg(mycandlesize, barsback);
+
+def Elongsignal = ((O[1] - C[1]) >= (bodysize * (H[1] - L[1]))) and ((H[1] - L[1]) > (AverageCandle * bodymultiplier)) and ((O[1] - C[1]) >  AverageBody) and (C > O);
+def Eshortsignal = ((C[1] - O[1]) >= (bodysize * (H[1] - L[1]))) and ((H[1] - L[1]) > (AverageCandle * bodymultiplier)) and ((C[1] - O[1]) >  AverageBody) and (O > C);
+
+input BarMultiplier = 1.25;
+
+def AverageCandle1 = simpleMovingAvg(mycandlesize, BarsBack);
+
+def Olongsignal = L < L[1] and C > H[1] and (H - L) >= AverageCandle1 * BarMultiplier;
+def Oshortsignal = H > H[1] and C < L[1] and (H - L) >= AverageCandle1 * BarMultiplier;
+
+input percentage = 0.1;
+
+def frangehl = H[1] - L[1];
+def frangeco = absValue(C[1] - O[1]);
+def sma10 = simpleMovingAvg(close, 10);
+
+def Dshortsignal = (frangeco <= frangehl * percentage and C < L[1] and L[1] > sma10 and C < O)  or (C < L[2] and C[1] >= L[2] and frangeco <= frangeco * percentage and C < O and L[2] > sma10);
+def Dlongsignal = (frangeco <= frangehl * percentage and C > H[1] and H[1] < sma10 and C > O)  or (C > H[2] and C[1] <= H[2] and frangeco <= frangeco * percentage and C > O and H[2] < sma10);
+
+plot bullish_extreme = if extreme_reversal then Elongsignal else double.nan;
+plot bearish_extreme = if extreme_reversal then Eshortsignal else double.nan;
+
+plot bullish_outside = if outside_reversal then Olongsignal else double.nan;
+plot bearish_outside = if outside_reversal then Oshortsignal else double.nan;
+
+plot bullish_doji = if doji_reversal then Dlongsignal else double.nan;
+plot bearish_doji = if doji_reversal then Dshortsignal else double.nan;
+
+bullish_extreme.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+bullish_extreme.SetDefaultColor(Color.CYAN);
+bullish_extreme.SetLineWeight(1);
+bearish_extreme.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+bearish_extreme.SetDefaultColor(Color.CYAN);
+bearish_extreme.SetLineWeight(1);
+
+bullish_outside.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+bullish_outside.SetDefaultColor(Color.MAGENTA);
+bullish_outside.SetLineWeight(1);
+bearish_outside.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+bearish_outside.SetDefaultColor(Color.MAGENTA);
+bearish_outside.SetLineWeight(1);
+
+bullish_doji.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+bullish_doji.SetDefaultColor(Color.YELLOW);
+bullish_doji.SetLineWeight(1);
+bearish_doji.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+bearish_doji.SetDefaultColor(Color.YELLOW);
+bearish_doji.SetLineWeight(1);
+
+
+
+
+
+AddOrder(OrderType.BUY_TO_OPEN, bullish_doji or bullish_outside or bullish_extreme, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "BUY");
+AddOrder(OrderType.SELL_TO_CLOSE,bearish_doji or bearish_outside or bearish_extreme, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "PROFIT");
+#AddOrder(OrderType.SELL_TO_OPEN, 0, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "DonchianLX");
+#AddOrder(OrderType.BUY_TO_CLOSE, 0, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "DonchianSX");
+
+
+#AddOrder(OrderType.BUY_AUTO,bullish_extreme, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "BUYNOW");
+#AddOrder(OrderType.SELL_AUTO,bearish_extreme, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "SELLNOW");
