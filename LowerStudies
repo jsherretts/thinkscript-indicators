@@ -337,3 +337,86 @@ AddOrder(OrderType.SELL_TO_CLOSE,bearish_doji or bearish_outside or bearish_extr
 
 #AddOrder(OrderType.BUY_AUTO,bullish_extreme, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "BUYNOW");
 #AddOrder(OrderType.SELL_AUTO,bearish_extreme, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "SELLNOW");
+
+
+
+#dmireversalbot 
+
+
+
+input length = 10;
+input highLowLength = 3;
+input sumLength = 3;
+input averageLength = 3;
+
+def stoch = DMI_StochasticExtreme(length, highLowLength, sumLength);
+def avgStoch = Average(stoch, averageLength);
+
+def Above = stoch crosses above avgStoch;
+def Below = stoch crosses below avgStoch;
+def Buy = Above;
+def sell = Below;
+
+#plot Above = stoch crosses above avgStoch;
+#plot Below = stoch crosses below avgStoch;
+#Below.SetDefaultColor(Color.DOWNTICK);
+#Below.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+#Above.SetDefaultColor(Color.UPTICK);
+#Above.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+
+AddOrder(OrderType.BUY_AUTO, stoch crosses above avgStoch , open[1], 1, Color.CYAN, Color.CYAN);
+
+AddOrder(OrderType.SELL_TO_CLOSE,stoch crosses below avgStoch, open[1], 1, Color.MAGENTA, Color.MAGENTA);
+
+#AddOrder(OrderType.sell_to_open, sell, open[1], 1, Color.MAGENTA, Color.MAGENTA);
+
+#AddOrder(OrderType.buy_to_close, buy , open[1], 1, Color.MAGENTA, Color.MAGENTA);
+
+
+input LineLimit = 200;
+input SizeLabels = yes;
+
+def bid = close(priceType = "Bid");
+def ask = close(priceType = "Ask");
+def barNumber = BarNumber();
+def Mark = close(priceType = "Mark");
+def Last = close(priceType = "Last");
+#Dynamic_Line
+script dynamic {
+    input LineLimit = 200;
+    input c = close;
+    def bar = if IsNaN(c)
+             then bar[1]
+             else BarNumber();
+    def ThisBar = HighestAll(bar);
+    def cLine   = if bar == ThisBar
+                 then c
+                 else Double.NaN;
+
+    plot P = if ThisBar - LineLimit <= bar
+           then HighestAll(cLine)
+           else Double.NaN;
+}
+
+plot B = dynamic(linelimit = LineLimit, c = bid);
+B .SetDefaultColor(Color.GREEN);
+B.SetStyle(Curve.FIRM);
+B .SetLineWeight(1);
+
+plot A = dynamic(linelimit = LineLimit, c = ask);
+A .SetDefaultColor(Color.MAGENTA);
+A.SetStyle(Curve.FIRM);
+A .SetLineWeight(1);
+def Dir = if Last == bid then 1 else 0;
+def NotDir = if (Last != bid) or (Last != ask) then 1 else 0;
+AddCloud(if Dir then A else Double.NaN, if Dir then B else Double.NaN, Color.GREEN, Color.CURRENT);
+AddCloud(if !Dir then A else Double.NaN, if !Dir then B else Double.NaN, Color.RED, Color.CURRENT);
+AddCloud(if NotDir then A else Double.NaN, B, Color.GRAY, Color.CURRENT);
+
+AddLabel(yes, Concat("BID: ", AsDollars(close(priceType = "BID"))), if Dir then Color.GREEN else Color.ORANGE );
+AddLabel(yes, Concat("ASK: ", AsDollars(close(priceType = "ASK"))), if Dir then Color.ORANGE else Color.GREEN);
+def spread = close(priceType = PriceType.ASK) - close(priceType = PriceType.BID);
+def spread_l1 = 0.05;
+def spread_l2 = 0.15;
+AddLabel(1, "Spread: " + spread, if  spread <= spread_l1 then Color.GREEN else if spread_l1 < spread <= spread_l2 then Color.YELLOW else COLOR.RED);
+
