@@ -421,8 +421,7 @@ def spread_l2 = 0.15;
 AddLabel(1, "Spread: " + spread, if  spread <= spread_l1 then Color.GREEN else if spread_l1 < spread <= spread_l2 then Color.YELLOW else COLOR.RED);
 
 
-
-# fractalchaos bands 
+#added orders long and short
 # Chaos Bands Conversion by WalkingBallista and BenTen for cherif
 # https://www.tradingview.com/script/YE3wLwsR-Fractal-Chaos-Bands-Backtest/
 # https://usethinkscript.com/d/134-fractal-chaos-bands-indicator-for-thinkorswim
@@ -450,6 +449,17 @@ def fractalDown = if downRightSide == sequenceCount and downLeftSide == sequence
 plot UpFractal = fractalUp;
 plot DownFractal = fractalDown;
 
-AddOrder(OrderType.BUY_AUTO, close > UpFractal, tickcolor = GetColor(1), arrowcolor = GetColor(1), name = "FCB_L");
+#AddOrder(OrderType.BUY_AUTO, close > UpFractal, tickcolor = GetColor(1), arrowcolor = GetColor(1), name = "FCB_L");
 
-AddOrder(OrderType.SELL_AUTO, close < DownFractal, tickcolor = GetColor(1), arrowcolor = GetColor(1), name = "FCB_S");
+#AddOrder(OrderType.SELL_AUTO, close < DownFractal, tickcolor = GetColor(1), arrowcolor = GetColor(1), name = "FCB_S");
+
+# long strat
+
+AddOrder(OrderType.BUY_TO_OPEN,close > UpFractal, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "buy");
+AddOrder(OrderType.SELL_TO_CLOSE,close < DownFractal, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
+
+# short strat
+AddOrder(OrderType.SELL_TO_OPEN, close < DownFractal, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "short");
+
+AddOrder(OrderType.BUY_TO_CLOSE, close > UpFractal, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "covershort");
+
