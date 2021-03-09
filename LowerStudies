@@ -420,3 +420,36 @@ def spread_l1 = 0.05;
 def spread_l2 = 0.15;
 AddLabel(1, "Spread: " + spread, if  spread <= spread_l1 then Color.GREEN else if spread_l1 < spread <= spread_l2 then Color.YELLOW else COLOR.RED);
 
+
+
+# fractalchaos bands 
+# Chaos Bands Conversion by WalkingBallista and BenTen for cherif
+# https://www.tradingview.com/script/YE3wLwsR-Fractal-Chaos-Bands-Backtest/
+# https://usethinkscript.com/d/134-fractal-chaos-bands-indicator-for-thinkorswim
+
+input sequenceCount = 1;
+
+def maxSideLength = sequenceCount + 10;
+def upRightSide = fold i1 = 1 to maxSideLength + 1 with count1 while count1 != sequenceCount and count1 != -1 do
+    if GetValue(high, -i1) > high or (GetValue(high, -i1) == high and count1 == 0) then -1
+    else if GetValue(high, -i1) < high then count1 + 1 else count1;
+def upLeftSide = fold i2 = 1 to maxSideLength + 1 with count2 while count2 != sequenceCount and count2 != -1 do
+    if GetValue(high, i2) > high or (GetValue(high, i2) == high and count2 >= 1) then -1
+    else if GetValue(high, i2) < high then count2 + 1 else count2;
+
+def downRightSide = fold i3 = 1 to maxSideLength + 1 with count3 while count3 != sequenceCount and count3 != -1 do
+    if GetValue(low, -i3) < low or (GetValue(low, -i3) == low and count3 == 0) then -1
+    else if GetValue(high, -i3) > low then count3 + 1 else count3;
+def downLeftSide = fold i4 = 1 to maxSideLength + 1 with count4 while count4 != sequenceCount and count4 != -1 do
+    if GetValue(low, i4) < low or (GetValue(low, i4) == low and count4 >= 1) then -1
+    else if GetValue(low, i4) > low then count4 + 1 else count4;
+
+def fractalUp = if upRightSide == sequenceCount and upLeftSide == sequenceCount then high else fractalUp[1];
+def fractalDown = if downRightSide == sequenceCount and downLeftSide == sequenceCount then low else fractalDown[1];
+
+plot UpFractal = fractalUp;
+plot DownFractal = fractalDown;
+
+AddOrder(OrderType.BUY_AUTO, close > UpFractal, tickcolor = GetColor(1), arrowcolor = GetColor(1), name = "FCB_L");
+
+AddOrder(OrderType.SELL_AUTO, close < DownFractal, tickcolor = GetColor(1), arrowcolor = GetColor(1), name = "FCB_S");
