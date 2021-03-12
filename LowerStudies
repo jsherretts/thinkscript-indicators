@@ -463,3 +463,31 @@ AddOrder(OrderType.SELL_TO_OPEN, close < DownFractal, tickcolor = GetColor(4), a
 
 AddOrder(OrderType.BUY_TO_CLOSE, close > UpFractal, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "covershort");
 
+#ehlersstochasticbot
+
+input price = close;
+input length = 20;
+input cutoffLength = 10;
+input over_bought = 0.8;
+input over_sold = 0.2;
+input mode = {default Predictive, Conventional};
+
+def filt = reference EhlersRoofingFilter(price, cutoffLength);
+def highestP = Highest(filt, length);
+def lowestP = Lowest(filt, length);
+def stoch = if (highestP - lowestP) != 0 then (filt - lowestP) / (highestP - lowestP) else 0;
+def Stochastic = reference EhlersSuperSmootherFilter(stoch, cutoffLength);
+def OverBought = over_bought;
+def OverSold = over_sold;
+
+
+
+def Buy = EhlersStochastic()."Stochastic" crosses above 0.2;
+def superbuy = EhlersStochastic()."Stochastic" is equal to 0;
+def  Sell = EhlersStochastic()."Stochastic" crosses below 0.8;
+def supersell = EhlersStochastic()."Stochastic" crosses above 1;
+
+#AddOrder(OrderType.BUY_TO_OPEN,BUY or superbuy, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "new bot");
+AddOrder(OrderType.SELL_TO_OPEN,supersell or sell, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "shortsell");
+#AddOrder(OrderType.SELL_TO_CLOSE,sell, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
+AddOrder(OrderType.BUY_TO_CLOSE, Buy, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "covershort");
