@@ -491,3 +491,40 @@ def supersell = EhlersStochastic()."Stochastic" crosses above 1;
 AddOrder(OrderType.SELL_TO_OPEN,supersell or sell, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "shortsell");
 #AddOrder(OrderType.SELL_TO_CLOSE,sell, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "profit");
 AddOrder(OrderType.BUY_TO_CLOSE, Buy, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "covershort");
+
+
+
+# stochasticmomoindex long & short 
+input over_bought = 40.0;
+input over_sold = -40.0;
+input percentDLength = 3;
+input percentKLength = 5;
+
+def min_low = Lowest(low, percentKLength);
+def max_high = Highest(high, percentKLength);
+def rel_diff = close - (max_high + min_low) / 2;
+def diff = max_high - min_low;
+
+def avgrel = ExpAverage(ExpAverage(rel_diff, percentDLength), percentDLength);
+def avgdiff = ExpAverage(ExpAverage(diff, percentDLength), percentDLength);
+
+def SMI = if avgdiff != 0 then avgrel / (avgdiff / 2) * 100 else 0;
+
+
+def AvgSMI = ExpAverage(SMI, percentDLength);
+
+
+def overbought = over_bought;
+
+def oversold = over_sold;
+
+
+def stochbuy = StochasticMomentumIndex()."SMI" crosses above StochasticMomentumIndex()."AvgSMI";
+
+def stochsell = StochasticMomentumIndex()."SMI" crosses below StochasticMomentumIndex()."AvgSMI";
+
+AddOrder(OrderType.BUY_TO_OPEN, stochbuy, tickcolor = GetColor(3), arrowcolor = GetColor(3), name = "buyin");
+AddOrder(OrderType.SELL_TO_OPEN,stochsell, tickcolor = GetColor(4), arrowcolor = GetColor(4), name = "short");
+AddOrder(OrderType.SELL_TO_CLOSE, stochsell, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "cha-ching");
+AddOrder(OrderType.BUY_TO_CLOSE,stochbuy, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "cover");
+
