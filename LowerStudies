@@ -528,3 +528,10 @@ AddOrder(OrderType.SELL_TO_OPEN,stochsell, tickcolor = GetColor(4), arrowcolor =
 AddOrder(OrderType.SELL_TO_CLOSE, stochsell, tickcolor = GetColor(5), arrowcolor = GetColor(5), name = "cha-ching");
 AddOrder(OrderType.BUY_TO_CLOSE,stochbuy, tickcolor = GetColor(6), arrowcolor = GetColor(6), name = "cover");
 
+
+pumpNdump Detector
+
+declare lower;
+
+
+plot Data = AroonIndicator("length" = 5)."Up" is greater than 70 and AroonIndicator("length" = 14)."Up" is greater than 70 and AroonIndicator()."Up" is greater than 70 and AroonIndicator("length" = 55)."Up" is greater than 70;
