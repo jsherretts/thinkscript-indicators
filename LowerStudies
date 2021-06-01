@@ -535,3 +535,27 @@ declare lower;
 
 
 plot Data = AroonIndicator("length" = 5)."Up" is greater than 70 and AroonIndicator("length" = 14)."Up" is greater than 70 and AroonIndicator()."Up" is greater than 70 and AroonIndicator("length" = 55)."Up" is greater than 70;
+
+
+squeeze with sma
+
+declare lower;
+input price = CLOSE;
+input length = 20;
+input nK = 1.5;
+input nBB = 2.0;
+input alertLine = 1.0;
+input maLengthOne = 20;
+input maTypeOne = AverageType.EXPONENTIAL;
+plot sqzHistogram = TTM_Squeeze(price, length, nK, nBB, alertLine).Histogram;
+sqzHistogram.AssignValueColor(if sqzHistogram < 0 then if sqzHistogram > sqzHistogram[1] then Color.YELLOW else Color.RED else
+if sqzHistogram > sqzHistogram[1] then Color.CYAN else Color.BLUE);
+sqzHistogram.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+sqzHistogram.SetLineWeight(3);
+def sqzAlert = TTM_Squeeze(price, length, nK, nBB, alertLine).SqueezeAlert;
+plot volComp = TTM_Squeeze(price, length, nK, nBB, alertLine).VolComp;
+volComp.AssignValueColor(if sqzAlert then Color.GREEN else Color.RED);
+volComp.SetPaintingStrategy(PaintingStrategy.POINTS);
+volComp.SetLineWeight(3);
+plot histogramAverage = MovingAverage(maTypeOne, sqzHistogram, maLengthOne);
+
