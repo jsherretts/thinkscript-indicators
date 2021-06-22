@@ -559,3 +559,40 @@ volComp.SetPaintingStrategy(PaintingStrategy.POINTS);
 volComp.SetLineWeight(3);
 plot histogramAverage = MovingAverage(maTypeOne, sqzHistogram, maLengthOne);
 
+
+
+
+
+
+#coppock curve
+
+
+declare lower;
+
+input RateOfChangeSlowPeriod = 14;
+input RateOfChangeFastPeriod = 11;
+input WeightedMAPeriod = 10;
+
+def AggregationPeriod = if (getAggregationPeriod() < AggregationPeriod.WEEK) then AggregationPeriod.WEEK else getAggregationPeriod();
+
+def price = close(period = AggregationPeriod);
+
+def ROC1 = if price[RateOfChangeSlowPeriod]!=0 then (price/price[RateOfChangeSlowPeriod]-1)*100 else 0;
+def ROC2 = if price[RateOfChangeFastPeriod]!=0 then (price/price[RateOfChangeFastPeriod]-1)*100 else 0;
+
+plot Coppock = WMA(ROC1 + ROC2, WeightedMAPeriod);
+
+Coppock.assignValueColor(if Coppock>Coppock[1] then color.green else color.red);
+Coppock.SetDefaultColor(GetColor(1));
+Coppock.setLineWeight(2);
+Coppock.HideBubble();
+
+plot ZeroLine = 0;
+
+ZeroLine.SetDefaultColor(color.white);
+ZeroLine.HideBubble();
+
+
+plot buy = Coppock[1] < 0 and Coppock > Coppock[1] and Coppock[1] < Coppock[2];
+ 
+AddChartBubble(Coppock[1] < 0 and Coppock > Coppock[1] and Coppock[1] < Coppock[2], Coppock, "Buy", Color.CYAN, no);
