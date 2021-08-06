@@ -596,3 +596,24 @@ ZeroLine.HideBubble();
 plot buy = Coppock[1] < 0 and Coppock > Coppock[1] and Coppock[1] < Coppock[2];
  
 AddChartBubble(Coppock[1] < 0 and Coppock > Coppock[1] and Coppock[1] < Coppock[2], Coppock, "Buy", Color.CYAN, no);
+
+
+#ROCKBOTTOM 
+
+
+declare lower;
+
+input length = 25;
+Assert(length > 0, "'length' must be positive: " + length);
+def Up = (length - 1 - GetMaxValueOffset(high, length)) * 100.0 / (length - 1);
+def Down = (length - 1 - GetMinValueOffset(low, length)) * 100.0 / (length - 1);
+# scan for up line crossing above down line
+#plot scan = Up[1] < Down[1] and Up > Down;
+# scan for down line crossing above up line
+#plot scan = Down[1] < Up[1] and Down > Up;
+plot scan = Down [1]>= 100 ;
+
+#SUPER3
+declare lower;
+
+plot Data = AwesomeOscillator()."AO" is greater than 0 and ElliotOscillator()."ElliotOsc" is greater than 0 and  TrendQuality()."TQ" is greater than 0;
