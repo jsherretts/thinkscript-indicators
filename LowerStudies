@@ -34,6 +34,7 @@ AwesomeOscillator()."AO" is greater than 0 and ElliotOscillator()."ElliotOsc" is
 
 
 
+
 DARVAS STRAT 
 
 input tradesize = 1 ;
@@ -617,3 +618,36 @@ plot scan = Down [1]>= 100 ;
 declare lower;
 
 plot Data = AwesomeOscillator()."AO" is greater than 0 and ElliotOscillator()."ElliotOsc" is greater than 0 and  TrendQuality()."TQ" is greater than 0;
+
+
+
+# AWESOME OSSY WITH LABELS
+
+input showTrend = yes;
+input showUnderlying = yes;
+
+#wizard input: trendCheck
+
+declare lower;
+declare zerobase;
+
+plot AO = Average(hl2, 5) - Average(hl2, 34);
+plot Zero = 0;
+
+AO.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+AO.SetLineWeight(3);
+AO.DefineColor("Up", Color.UPTICK);
+AO.DefineColor("Down", Color.DOWNTICK);
+AO.AssignValueColor(if AO > AO[1] then AO.color("Up") else if AO < AO[1] then AO.color("Down") else GetColor(1));
+Zero.SetDefaultColor(GetColor(5));
+ def Downtrend  =  AO < AO[1];
+def Uptrend =   AO > AO[1];
+
+
+AddLabel(showTrend, if Downtrend then " Downtrend " else if Uptrend then " Uptrend " else " Sideways ", if Downtrend then Color.DOWNTICK else if Uptrend then Color.UPTICK else Color.GRAY);
+
+#END trendCheck
+
+#Underlying_Equity_Price
+
+AddLabel(showUnderlying, " " + GetUnderlyingSymbol() + ":  " + close(GetUnderlyingSymbol()) + " ", if Downtrend then Color.RED else if Uptrend then Color.GREEN else Color.GRAY);
