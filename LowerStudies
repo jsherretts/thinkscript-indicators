@@ -125,3 +125,6 @@ AddLabel(showTrend, if Downtrend then " Downtrend " else if Uptrend then " Uptre
 #Underlying_Equity_Price
 
 AddLabel(showUnderlying, " " + GetUnderlyingSymbol() + ":  " + close(GetUnderlyingSymbol()) + " ", if Downtrend then Color.RED else if Uptrend then Color.GREEN else Color.GRAY);
+
+ plot signal =  Uptrend ;
+  AssignBackgroundColor(if signal then Color.LIGHT_GREEN else Color.DARK_RED);
